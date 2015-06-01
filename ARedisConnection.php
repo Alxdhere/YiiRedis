@@ -31,6 +31,12 @@ class ARedisConnection extends CApplicationComponent {
 	public $prefix = "Yii.redis.";
 
 	/**
+	 * Redis default serializer
+	 * @var int
+	 */
+	public $serializer = Redis::SERIALIZER_NONE;
+
+	/**
 	 * The redis server port
 	 * @var integer
 	 */
@@ -81,7 +87,12 @@ class ARedisConnection extends CApplicationComponent {
 					throw new CException('Redis authentication failed!');
 				}
 			}
-			$this->_client->setOption(Redis::OPT_PREFIX, $this->prefix);
+			if ($this->_client->setOption(Redis::OPT_PREFIX, $this->prefix) == FALSE)
+				throw new Exception('Apply prefix option is failed');
+			
+			if ($this->_client->setOption(Redis::OPT_SERIALIZER, $this->serializer) == FALSE)
+				throw new Exception('Apply serializer option is failed');
+				
 			$this->_client->select($this->database);
 		}
 		return $this->_client;
